@@ -9,7 +9,7 @@ type PostType = (typeof POST_TYPES)[number] // PostType === 'PIT' | 'PEAK' | 'BU
 //component takes no props, manages its own state, renders a form
 export default function PostForm() {
   const [text, setText] = useState('')
-  const [type, setType] = useState<PostType>('PEAK')
+  const [type, setType] = useState<PostType>('PIT')
 
   const [loading, setLoading] = useState(false)
   //stores an error message if something goes wrong
@@ -65,8 +65,8 @@ export default function PostForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-3 border p-4 rounded-lg">
       <div className="flex justify-center gap-6"> 
+        <button type="button"  onClick={()=>setType('PIT')} className={type === 'PIT' ? 'font-bold underline' : 'text-gray-500'}>Pit</button>
         <button type="button"  onClick={()=>setType('PEAK')} className={type === 'PEAK' ? 'font-bold underline' : 'text-gray-500'}>Peak</button> 
-        <button type="button"  onClick={()=>setType('PIT')} className={type === 'PIT' ? 'font-bold underline' : 'text-gray-500'}>Pit</button> 
         <button type="button"  onClick={()=>setType('BUFFALO')} className={type === 'BUFFALO' ? 'font-bold underline' : 'text-gray-500'}>Buffalo</button> 
       </div>
       <div className="tabcontent">
