@@ -156,6 +156,34 @@ describe('app/api/posts/route.ts', () => {
       expect(res.status).toBe(400)
       expect(prismaMocks.create).not.toHaveBeenCalled()
     })
+    
+    it('rejects whitespace only text', async () => {
+        //Arrange: text is only spaces
+        const req = new Request('http://localhost/api/posts', {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({
+                text: '     ',
+                type: 'PIT',
+                lat: 10,
+                lng: 10,
+            }),
+        })
+
+        //Act
+        const res = await POST(req)
+
+        //Assert: should be treated as empty and rejected
+        expect(res.status).toBe(400)
+
+        const body = await readJson(res)
+        expect(body).toEqual({
+            error: 'Valid text, type (PEAK/PIT/BUFFALO), lat, and lng are required'
+        })
+
+        //Assert DB write should not happen 
+        expect(prismaMocks.create).not.toHaveBeenCalled()
+    })
   })
 
   describe('GET', () => {
@@ -246,34 +274,6 @@ describe('app/api/posts/route.ts', () => {
       expect(arg.where.lng).toHaveProperty('lte')
 
       expect(arg.where.expiresAt).toEqual({ gt: now })
-    })
-
-    it('rejects whitespace only text', async () => {
-        //Arrange: text is only spaces
-        const req = new Request('http://localhost/api/posts', {
-            method: 'POST',
-            headers: { 'content-type': 'application/json' },
-            body: JSON.stringify({
-                text: '     ',
-                type: 'PIT',
-                lat: 10,
-                lng: 10,
-            }),
-        })
-
-        //Act
-        const res = await POST(req)
-
-        //Assert: should be treated as empty and rejected
-        expect(res.status).toBe(400)
-
-        const body = await readJson(res)
-        expect(body).toEqual({
-            error: 'Valid text, type (PEAK/PIT/BUFFALO), lat, and lng are required'
-        })
-
-        //Assert DB write should not happen 
-        expect(prismaMocks.create).not.toHaveBeenCalled()
     })
   })
 })
