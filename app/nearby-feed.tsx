@@ -15,12 +15,25 @@ type Post = {
 }
 
 type RadiusOption = 'global' | 5 | 10 | 25 | 50
+
+
 export default function NearbyFeed() {
     const [posts, setPosts] = useState<Post[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
     const [radius, setRadius] = useState<RadiusOption>(25)
-    
+    const [refreshTick, setRefreshTick] = useState(0)
+
+    //Set up and tear down an event listener.
+    useEffect(() => {
+      function onRefresh() {
+        setRefreshTick((t) => t + 1)
+      }
+      window.addEventListener('ppb:refreshPosts', onRefresh)
+      return () => window.removeEventListener('ppb:refreshPosts', onRefresh)
+    }, [])
+
+    //Fetch posts whenever the inputs that affect the data change.
     useEffect(()=>{
         //Prevents updating state after the component unmounts “Can’t update state on unmounted component”
         let cancelled = false
@@ -73,7 +86,7 @@ export default function NearbyFeed() {
         }
 
     //Every time radius changes
-    }, [radius])
+    }, [radius, refreshTick])
 
     return (
     <div className="space-y-3">

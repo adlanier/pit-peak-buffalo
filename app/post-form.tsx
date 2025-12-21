@@ -52,8 +52,9 @@ export default function PostForm() {
         throw new Error(data.error || 'Failed to create post')
       }
 
-      // super lazy refresh: reload the page
-      window.location.reload()
+    setText('')
+    window.dispatchEvent(new Event('ppb:refreshPosts'))
+
     } catch (err: any) {
       setError(err.message ?? 'Something went wrong')
     } finally {

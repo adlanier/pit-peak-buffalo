@@ -9,13 +9,12 @@ type AllowedType = (typeof ALLOWED_TYPES)[number]
 
 const DEFAULT_RADIUS_KM = 25
 
-
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url)
 
   const latParam = searchParams.get('lat')
   const lngParam = searchParams.get('lng')
-  const radiusParam = searchParams.get('radiusKm')
+ // const radiusParam = searchParams.get('radiusKm')
 
   // If lat/lng are missing -> GLOBAL feed
   if (latParam === null || lngParam === null) {
@@ -31,12 +30,13 @@ export async function GET(req: Request) {
   const radiusKm = Number(searchParams.get('radiusKm') ?? DEFAULT_RADIUS_KM)
 
   // If no location provided (or invalid), fall back to latest posts (global)
-  const latOk = Number.isFinite(lat) && Math.abs(lat) <= 90
-  const lngOk = Number.isFinite(lng) && Math.abs(lng) <= 180
-  const rOk = Number.isFinite(radiusKm) && radiusKm > 0 && radiusKm <= 100
+  const latOk = Number.isFinite(lat) && Math.abs(lat) <= 90 //south pole is -90, north is 90 
+  const lngOk = Number.isFinite(lng) && Math.abs(lng) <= 180// valid range is -180 to 180
+  const rOk = Number.isFinite(radiusKm) && radiusKm > 0 && radiusKm <= 100 //radius cant be zero and radius over 100 is just too big to be nearby
 
   if (!latOk || !lngOk || !rOk) {
     const posts = await prisma.post.findMany({
+      where: { expiresAt: { gt: new Date() } },
       orderBy: { createdAt: 'desc' },
       take: 100,
     })
@@ -51,6 +51,7 @@ export async function GET(req: Request) {
     where: {
       lat: { gte: lat - latDelta, lte: lat + latDelta },
       lng: { gte: lng - lngDelta, lte: lng + lngDelta },
+      expiresAt: { gte : new Date() },
     },
     orderBy: { createdAt: 'desc' },
     take: 100,
@@ -75,8 +76,11 @@ export async function POST(req: Request) {
     )
   }
 
+  const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000)
+
+
   const post = await prisma.post.create({
-    data: { text: cleanText, type: type as AllowedType, lat, lng },
+    data: { text: cleanText, type: type as AllowedType, lat, lng, expiresAt, },
   })
 
   return NextResponse.json(post, { status: 201 })
