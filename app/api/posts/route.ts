@@ -1,6 +1,7 @@
 // app/api/posts/route.ts
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { containsBlockedWord } from '@/lib/moderation'
 export const dynamic = 'force-dynamic'
 
 
@@ -76,6 +77,14 @@ export async function POST(req: Request) {
     return NextResponse.json(
       { error: 'Valid text, type (PEAK/PIT/BUFFALO), lat, and lng are required' },
       { status: 400 },
+    )
+  }
+
+
+  if (containsBlockedWord(cleanText)) {
+    return NextResponse.json(
+      { error: 'That content is not allowed' },
+      { status: 400 }
     )
   }
 

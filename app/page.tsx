@@ -13,7 +13,7 @@ export default async function HomePage() {
     <main className="mx-auto max-w-xl space-y-8 p-6">
       <h1 className="text-3xl font-bold text-center">pit • peak • buffalo</h1>
       <p className="text-center text-sm text-gray-500">
-        Anonymously share a pit, a peak, or something random about your day (buffalo).
+        Anonymously share the worst part of your day (pit), the best part (peak), or something weird that happened (buffalo).
       </p>
 
       <PostForm />
