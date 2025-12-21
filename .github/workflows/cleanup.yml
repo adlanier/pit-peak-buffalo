@@ -14,4 +14,4 @@ jobs:
         run: |
           curl -sS -X GET \
             -H "x-cron-secret: ${{ secrets.CRON_SECRET }}" \
-            https://YOUR-APP.vercel.app/api/cleanup
+            https://pit-peak-buffalo.vercel.app/api/cleanup
