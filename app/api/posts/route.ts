@@ -16,9 +16,12 @@ export async function GET(req: Request) {
   const lngParam = searchParams.get('lng')
  // const radiusParam = searchParams.get('radiusKm')
 
+  const now = new Date()
+
   // If lat/lng are missing -> GLOBAL feed
   if (latParam === null || lngParam === null) {
     const posts = await prisma.post.findMany({
+      where: { expiresAt: {gt: now} },
       orderBy: { createdAt: 'desc' },
       take: 100,
     })
@@ -36,7 +39,7 @@ export async function GET(req: Request) {
 
   if (!latOk || !lngOk || !rOk) {
     const posts = await prisma.post.findMany({
-      where: { expiresAt: { gt: new Date() } },
+      where: { expiresAt: { gt: now } },
       orderBy: { createdAt: 'desc' },
       take: 100,
     })
@@ -51,7 +54,7 @@ export async function GET(req: Request) {
     where: {
       lat: { gte: lat - latDelta, lte: lat + latDelta },
       lng: { gte: lng - lngDelta, lte: lng + lngDelta },
-      expiresAt: { gte : new Date() },
+      expiresAt: { gt : now },
     },
     orderBy: { createdAt: 'desc' },
     take: 100,
