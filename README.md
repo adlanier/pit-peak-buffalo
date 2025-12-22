@@ -1,4 +1,4 @@
-# Pit-Peak-Buffalo
+# pit • peak • buffalo
 
 pit • peak • buffalo is a location-based social journaling platform inspired by Yik Yak, designed to let users post short, anonymous reflections tied to their physical location. Posts are categorized as the worst part about your day (pit), the best part about your day (peak), or the weirdest part about your day (buffalo).
 
